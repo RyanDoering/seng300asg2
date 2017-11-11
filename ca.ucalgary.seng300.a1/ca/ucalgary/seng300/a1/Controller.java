@@ -371,7 +371,6 @@ public class Controller {
 		  }
 		  else 
 		  {
-			  
 			int nickelTotal = client.getCoinRackForCoinKind(5).size();
 		    	int dimeTotal = client.getCoinRackForCoinKind(10).size();
 		    	int quarterTotal = client.getCoinRackForCoinKind(25).size();
