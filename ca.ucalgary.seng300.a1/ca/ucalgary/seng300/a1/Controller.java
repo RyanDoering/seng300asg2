@@ -292,6 +292,74 @@ public class Controller {
 	    	return false;
 	  }
 	
+	//RYAN, new method to dispense change, only does exact change right now
+	//Methd call to dispense change also added when a pop is dispensed 
+	  public void dispenseChange(int credit) throws CapacityExceededException, EmptyException, DisabledException
+	  {
+		  int change = credit;
+		  
+		  if (checkChange(change) == true) //if we can give exact change, then go through all the coin types and give back the change 
+		  {
+			  int toonies = Math.round((int)change/200);
+			  change = change % 200;
+			  int loonies = Math.round((int)change/100);
+			  change = change % 100;
+			  int quarters = Math.round((int)change/25);
+			  change = change % 25;
+			  int dimes = Math.round((int)change/10);
+			  change = change % 10;
+			  int nickels = Math.round((int)change/5);
+			  change = change % 5;
+			  
+			  if (toonies != 0)
+			  {
+				  for (int i = 0; i == toonies; i++)
+				  {
+					  client.getCoinRackForCoinKind(200).releaseCoin();
+					  client.getCoinReturn().acceptCoin(new Coin(200));
+				  }
+			  }
+			  if (loonies != 0)
+			  {
+				  for (int i = 0; i == loonies; i++)
+				  {
+					  client.getCoinRackForCoinKind(100).releaseCoin();
+					  client.getCoinReturn().acceptCoin(new Coin(100));
+				  }
+			  }
+			  if (quarters != 0)
+			  {
+				  for (int i = 0; i == quarters; i++)
+				  {
+					  client.getCoinRackForCoinKind(25).releaseCoin();
+					  client.getCoinReturn().acceptCoin(new Coin(25));
+				  }
+			  }
+			  if (dimes != 0)
+			  {
+				  for (int i = 0; i == dimes; i++)
+				  {
+					  client.getCoinRackForCoinKind(10).releaseCoin();
+					  client.getCoinReturn().acceptCoin(new Coin(10));
+				  }
+			  }
+			  if (nickels != 0)
+			  {
+				  for (int i = 0; i == nickels; i++)
+				  {
+					  client.getCoinRackForCoinKind(5).releaseCoin();
+					  client.getCoinReturn().acceptCoin(new Coin(5));
+				  }
+			  }
+			  
+		  }
+		  else 
+		  {
+			  //If you do not have exact change, still need to implement 
+		  }
+	  }
+//DONE 
+	
 	/**
 	 * User has entered a coin. Insert it into the hardware and listen to whether its valid. Update total accordingly.
 	 * @param coin
