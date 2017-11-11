@@ -371,7 +371,44 @@ public class Controller {
 		  }
 		  else 
 		  {
-			  //If you do not have exact change, still need to implement 
+			  
+			int nickelTotal = client.getCoinRackForCoinKind(5).size();
+		    	int dimeTotal = client.getCoinRackForCoinKind(10).size();
+		    	int quarterTotal = client.getCoinRackForCoinKind(25).size();
+		    	int loonieTotal = client.getCoinRackForCoinKind(100).size();
+		    	int toonieTotal = client.getCoinRackForCoinKind(200).size();
+		    	int changeRequired = credit;
+		   
+		    	while(changeRequired >= 200 && toonieTotal > 0) {
+		      		changeRequired -= 200;
+		      		toonieTotal--;
+		      		client.getCoinRackForCoinKind(200).releaseCoin();
+				client.getCoinReturn().acceptCoin(new Coin(200));
+		    	}
+		    	while(changeRequired >= 100 && loonieTotal > 0) {
+		      		changeRequired -= 100;
+		      		loonieTotal--;
+		      		client.getCoinRackForCoinKind(100).releaseCoin();
+				client.getCoinReturn().acceptCoin(new Coin(100));
+		    	}
+		    	while(changeRequired >= 25 && quarterTotal > 0) {
+		      		changeRequired -= 25;
+		      		quarterTotal--;
+		      		client.getCoinRackForCoinKind(25).releaseCoin();
+				client.getCoinReturn().acceptCoin(new Coin(25));
+		    	}
+		    	while(changeRequired >= 10 && dimeTotal > 0) {
+		      		changeRequired -= 10;
+		      		dimeTotal--;
+		      		client.getCoinRackForCoinKind(10).releaseCoin();
+				client.getCoinReturn().acceptCoin(new Coin(10));
+		    	}
+		    	while(changeRequired >= 5 && nickelTotal > 0) {
+		      		changeRequired -= 5;
+		      		nickelTotal--;
+		      		client.getCoinRackForCoinKind(5).releaseCoin();
+				client.getCoinReturn().acceptCoin(new Coin(5));
+		    	}
 		  }
 	  }
 	//DONE 
