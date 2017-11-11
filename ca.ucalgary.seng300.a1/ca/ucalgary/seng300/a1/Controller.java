@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ga2;
+package ca.ucalgary.seng300.a2;
 
 
 import java.util.ArrayList;
