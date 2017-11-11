@@ -115,8 +115,8 @@ public class Controller {
 		int[] popCanAmounts = new int[popCanNames.size()];		
 		
 		//Populate this array with 5 in each index, for now we want 5 of each type of pop loaded into the machine
-		for(int i=0; i<popCanNames.size();i++)
-			popCanAmounts[i] = 5;			
+		//for(int i=0; i<popCanNames.size();i++)
+		//	popCanAmounts[i] = 5;			
 		
 		client.configure(popCanNames, popCanCosts);
 
