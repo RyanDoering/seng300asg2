@@ -392,6 +392,47 @@ public class ControllerTest {
 		myVending.setTotal(150);
 		assertEquals(true,myVending.checkChange(myVending.getTotal()));
 	}
+	
+	/**
+	 * Tests when first initialized with no change, if the light is active
+	 */
+	@Test
+	public void testNoChangeLightOn() {
+		assertEquals(true,myVending.getVending().getExactChangeLight().isActive());
+	}
+  
+	/**
+	 * Tests when machine lacks enough change, if the light is turned on
+	 */
+	@Test
+	public void testNoChangeLightOn2() {
+		int[] coins = {1,0,0,0,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.exactChange();
+		assertEquals(true,myVending.getVending().getExactChangeLight().isActive());
+	}
+  
+	/**
+	 * Tests when racks are filled with sufficient change, if the change light is turned off
+	 */
+	@Test
+	public void testNoChangeLightOff() {
+		int[] coins = {1,2,1,1,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.exactChange();
+		assertEquals(false,myVending.getVending().getExactChangeLight().isActive());
+	}
+  
+	/**
+	 * Tests when racks are filled with bare minimum, if change lights are turned off
+	 */
+	@Test
+	public void testNoChangeLightOff2() {
+		int[] coins = {0,0,2,1,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.exactChange();
+		assertEquals(false,myVending.getVending().getExactChangeLight().isActive());
+	}
 	// END
 
 }
