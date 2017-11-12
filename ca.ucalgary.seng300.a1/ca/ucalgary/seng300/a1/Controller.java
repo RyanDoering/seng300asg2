@@ -92,6 +92,8 @@ public class Controller {
 		//Canadian Currency, 6 types of pop, capacity of coinRack=15, 10 pops per rack, 200 coins in receptacle
 		client = new VendingMachine(CAD, 6, 15, 10, 200, 10, 10);	//10 is delivery chute capacity and coin return capacity - temp values because its not my problem
 
+		exactChange();
+		
 		outOfOrderLight = client.getOutOfOrderLight();
 		exactChangeOnlyLight = client.getExactChangeLight();
 		
@@ -252,6 +254,37 @@ public class Controller {
 		else throw new SimulationException("Decrement cannot result in total being a negative value");
 
 		
+	}
+	
+	/**
+	 * Checks to see if there is exact change available for distribution
+	 * @return boolean value, true if there is enough, false if there is not enough
+	 */
+	public void exactChange() {
+		int numOfPops = client.getNumberOfSelectionButtons();
+		int cost;
+		int loonieCheck, toonieCheck;
+		int[] costs = new int[numOfPops];
+		for(int i = 0; i < numOfPops; i++) {
+			costs[i] = client.getPopKindCost(i);
+		}
+		// Currently checking all items in the vending machine. Can be made more efficient if duplicate numbers are
+		// removed from the array and are the only ones checked. May be done in future
+		for(int j = 0; j < numOfPops; j++) {
+			cost = costs[j];
+			if((cost % 25) != 0) {
+				if(!(checkChange(cost % 25))) {
+					client.getExactChangeLight().activate();
+				}
+			}
+			loonieCheck = ((cost + 99) / 100) * 100;
+			toonieCheck = loonieCheck + 100;
+			if(!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
+				client.getExactChangeLight().activate();
+			} else {
+				client.getExactChangeLight().deactivate();
+			}
+		}
 	}
 	
 	  /**
