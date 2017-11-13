@@ -11,7 +11,7 @@ import org.lsmr.vending.hardware.*;
 
 /**
  * @author Vending Solutions Incorporated
- * Developed by: Nguyen Viktor(10131322), Michaela Ol≈°√°kov√°(30002591), Roman Sklyar(10131059)
+ * Developed by: Nguyen Viktor(10131322), Michaela Olö·kov·(30002591), Roman Sklyar(10131059)
  * 
  *
  */
@@ -61,8 +61,8 @@ public class Controller {
 		 * Set-up machine variables
 		 */
 	public static String messageBeingDisplayed; //this is just for testing, no other way i can think of
-	private int total;
-	private static boolean validCoin;
+	private int total, buttonPressed;
+	private boolean validCoin;
 	private VendingMachine client;
 	private MySlotListener slotListener;
 	private MyButtonListener buttonListener;
@@ -73,10 +73,10 @@ public class Controller {
 	private MyExactChangeOnlyLightListener exactChangeOnlyLightListener;
 	private IndicatorLight outOfOrderLight;
 	private IndicatorLight exactChangeOnlyLight;
-	private static boolean coinSlotEnabled;
-	private static boolean buttonEnabled;
-	private static boolean outOfOrder;
 	private PushButton compareButton;
+	private boolean coinSlotEnabled;
+	private boolean buttonEnabled;
+	private boolean outOfOrder;
 	Timer timer1 = new Timer(); //timers
 	Timer timer2 = new Timer();
 	
@@ -92,9 +92,9 @@ public class Controller {
 		//According to Clients specifications:
 		//Canadian Currency, 6 types of pop, capacity of coinRack=15, 10 pops per rack, 200 coins in receptacle
 		client = new VendingMachine(CAD, 6, 15, 10, 200, 10, 10);	//10 is delivery chute capacity and coin return capacity - temp values because its not my problem
-
-		exactChange();
 		
+		exactChange();
+
 		outOfOrderLight = client.getOutOfOrderLight();
 		exactChangeOnlyLight = client.getExactChangeLight();
 		
@@ -177,13 +177,13 @@ public class Controller {
 		
 	}
 	
-  	/**
-   	* Used for testing purposes, set a specified total credit
-   	* @param credit
-   	*/
-  	public void setTotal(int credit) {
-  	  total = credit;
-  	}
+  /**
+   * Used for testing purposes, set a specified total credit
+   * @param credit
+  */
+  public void setTotal(int credit) {
+    total = credit;
+  }
 	
 	/**
 	 * Add to the total when a coin has been inserted
@@ -262,84 +262,84 @@ public class Controller {
 	 * @return boolean value, true if there is enough, false if there is not enough
 	 */
 	public void exactChange() {
-		int numOfPops = client.getNumberOfSelectionButtons();
-		int cost;
-		int loonieCheck, toonieCheck;
-		int[] costs = new int[numOfPops];
-		for(int i = 0; i < numOfPops; i++) {
-			costs[i] = client.getPopKindCost(i);
-		}
-		// Currently checking all items in the vending machine. Can be made more efficient if duplicate numbers are
-		// removed from the array and are the only ones checked. May be done in future
-		for(int j = 0; j < numOfPops; j++) {
-			cost = costs[j];
-			if((cost % 25) != 0) {
-				if(!(checkChange(cost % 25))) {
-					client.getExactChangeLight().activate();
-				}
-			}
-			loonieCheck = ((cost + 99) / 100) * 100;
-			toonieCheck = loonieCheck + 100;
-			if(!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
-				client.getExactChangeLight().activate();
-			} else {
-				client.getExactChangeLight().deactivate();
-			}
-		}
+    int numOfPops = client.getNumberOfSelectionButtons();
+    int cost;
+    int loonieCheck, toonieCheck;
+    int[] costs = new int[numOfPops];
+    for(int i = 0; i < numOfPops; i++) {
+      costs[i] = client.getPopKindCost(i);
+    }
+    // Currently checking all items in the vending machine. Can be made more efficient if duplicate numbers are
+    // removed from the array and are the only ones checked. May be done in future
+    for(int j = 0; j < numOfPops; j++) {
+      cost = costs[j];
+      if((cost % 25) != 0) {
+        if(!(checkChange(cost % 25))) {
+          client.getExactChangeLight().activate();
+        }
+      }
+      loonieCheck = ((cost + 99) / 100) * 100;
+      toonieCheck = loonieCheck + 100;
+      if(!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
+        client.getExactChangeLight().activate();
+      } else {
+        client.getExactChangeLight().deactivate();
+      }
+    }
 	}
 	
-	  /**
-	   * Checks to see if change is available against the value inputed
-	   * @param value is the value to be checked. Use getTotal to check for change for current credit
-	   * @return boolean value, true if there's enough change, false if insufficient.
-	   */
-	  public boolean checkChange(int value) {
-	    	int nickelTotal = client.getCoinRackForCoinKind(5).size();
-	    	int dimeTotal = client.getCoinRackForCoinKind(10).size();
-	    	int quarterTotal = client.getCoinRackForCoinKind(25).size();
-	    	int loonieTotal = client.getCoinRackForCoinKind(100).size();
-	    	int toonieTotal = client.getCoinRackForCoinKind(200).size();
-	    	int changeRequired = value;
-	    	while(changeRequired >= 200 && toonieTotal > 0) {
-	      		changeRequired -= 200;
-	      		toonieTotal--;
-	    	}
-	    	while(changeRequired >= 100 && loonieTotal > 0) {
-	      		changeRequired -= 100;
-	      		loonieTotal--;
-	    	}
-	    	while(changeRequired >= 25 && quarterTotal > 0) {
-	      		changeRequired -= 25;
-	      		quarterTotal--;
-	    	}
-	    	while(changeRequired >= 10 && dimeTotal > 0) {
-	      		changeRequired -= 10;
-	      		dimeTotal--;
-	    	}
-	    	while(changeRequired >= 5 && nickelTotal > 0) {
-	      		changeRequired -= 5;
-	      		nickelTotal--;
-	    	}
-	    	if(changeRequired == 0) {
-	      		return true;
-	    	}
-	    	return false;
+	
+	/**
+	 * Checks to see if change is available against the value inputed
+	 * @param value is the value to be checked. Use getTotal to check for change for current credit
+	 * @return boolean value, true if there's enough change, false if insufficient.
+	 */
+	public boolean checkChange(int value) {
+	 	int nickelTotal = client.getCoinRackForCoinKind(5).size();
+	 	int dimeTotal = client.getCoinRackForCoinKind(10).size();
+	 	int quarterTotal = client.getCoinRackForCoinKind(25).size();
+	 	int loonieTotal = client.getCoinRackForCoinKind(100).size();
+	 	int toonieTotal = client.getCoinRackForCoinKind(200).size();
+	 	int changeRequired = value;
+	 	while(changeRequired >= 200 && toonieTotal > 0) {
+	   		changeRequired -= 200;
+	   		toonieTotal--;
+	 	}
+	 	while(changeRequired >= 100 && loonieTotal > 0) {
+	   		changeRequired -= 100;
+	   		loonieTotal--;
+	 	}
+	 	while(changeRequired >= 25 && quarterTotal > 0) {
+	   		changeRequired -= 25;
+	   		quarterTotal--;
+	 	}
+	  while(changeRequired >= 10 && dimeTotal > 0) {
+	   		changeRequired -= 10;
+	   		dimeTotal--;
+	  }
+	  while(changeRequired >= 5 && nickelTotal > 0) {
+	   		changeRequired -= 5;
+	   		nickelTotal--;
+	  }
+	  if(changeRequired == 0) {
+	   		return true;
+	  }
+	  return false;
 	  }
 	
 	public void buttonCheck(PushButton button) {
-		compareButton = button;
-		for(int i = 0; i < client.getNumberOfSelectionButtons(); i++) {
-			if(compareButton == client.getSelectionButton(i)) {
-				buttonPressed = i;
-				System.out.println("Button " + i + " was pressed");
-			}
-		}
+	  compareButton = button;
+	  for(int i = 0; i < client.getNumberOfSelectionButtons(); i++) {
+	    if(compareButton == client.getSelectionButton(i)) {
+	      buttonPressed = i;
+	      System.out.println("Button " + i + " was pressed");
+	    }
+	  }
 	}
 	
 	public int getButtonPressed() {
-		return buttonPressed;
+	  return buttonPressed;
 	}
-	
 	
 	//RYAN, new method to dispense change, only does exact change right now
 	//Methd call to dispense change also added when a pop is dispensed 
@@ -576,7 +576,7 @@ public class Controller {
 
 		@Override
 		public void pressed(PushButton button) {
-			buttonCheck(button);
+		  buttonCheck(button);
 			System.out.println("pressed");
 			
 		}
@@ -712,7 +712,8 @@ public class Controller {
 
 		@Override
 		public void disabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
-			System.out.println("Out of Order Light Disabled");
+			exactChange();
+		  System.out.println("Out of Order Light Disabled");
 			
 		}
 
@@ -738,7 +739,7 @@ public class Controller {
 
 		@Override
 		public void disabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
-			System.out.println("Exact Change Only Light disabled");
+		  System.out.println("Exact Change Only Light disabled");
 			
 		}
 
