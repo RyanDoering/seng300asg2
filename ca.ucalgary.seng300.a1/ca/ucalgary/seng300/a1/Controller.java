@@ -527,7 +527,7 @@ public class Controller {
 	 * A class for the CoinSlotListener to get events from the machine
 	 * 
 	 */
-	private static class MySlotListener implements CoinSlotListener {
+	private class MySlotListener implements CoinSlotListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -559,7 +559,7 @@ public class Controller {
 	 * A class for the ButtonListener to get events from the machine
 	 * 
 	 */
-	private static class MyButtonListener implements PushButtonListener {
+	private class MyButtonListener implements PushButtonListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -586,7 +586,7 @@ public class Controller {
 	 * A class for the PopRackListener to get events from the machine
 	 * 
 	 */
-	private static class MyPopRackListener implements PopCanRackListener {
+	private class MyPopRackListener implements PopCanRackListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -640,7 +640,7 @@ public class Controller {
 	/**
 	 * A class for the DeliveryChuteListener to get events from the machine
 	 */
-	private static class MyDeliveryChuteListener implements DeliveryChuteListener {
+	private class MyDeliveryChuteListener implements DeliveryChuteListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -680,7 +680,7 @@ public class Controller {
 		}
 
 	}
-	private static class MyDisplayListener implements DisplayListener {
+	private class MyDisplayListener implements DisplayListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -702,7 +702,7 @@ public class Controller {
 		
 		}
 	}
-	private static class MyOutOfOrderLightListener implements IndicatorLightListener{
+	private class MyOutOfOrderLightListener implements IndicatorLightListener{
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -728,7 +728,7 @@ public class Controller {
 			
 		}
 	}
-	private static class MyExactChangeOnlyLightListener implements IndicatorLightListener{
+	private class MyExactChangeOnlyLightListener implements IndicatorLightListener{
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
