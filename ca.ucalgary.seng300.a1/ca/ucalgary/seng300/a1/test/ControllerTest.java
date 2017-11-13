@@ -433,6 +433,17 @@ public class ControllerTest {
 		myVending.exactChange();
 		assertEquals(false,myVending.getVending().getExactChangeLight().isActive());
 	}
+	
+	/**
+	 * Tests to see which selection button was pressed
+	 */
+	@Test
+	public void pushButtonCheck() {
+		int[] coins = {15,15,15,15,15};
+		myVending.getVending().loadCoins(coins);
+		myVending.getVending().getSelectionButton(2).press();
+		assertEquals(2,myVending.getButtonPressed());
+	}
 	// END
 
 }
