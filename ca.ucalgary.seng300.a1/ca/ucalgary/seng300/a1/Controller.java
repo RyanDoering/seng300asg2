@@ -76,6 +76,7 @@ public class Controller {
 	private static boolean coinSlotEnabled;
 	private static boolean buttonEnabled;
 	private static boolean outOfOrder;
+	private PushButton compareButton;
 	Timer timer1 = new Timer(); //timers
 	Timer timer2 = new Timer();
 	
@@ -325,6 +326,21 @@ public class Controller {
 	    	return false;
 	  }
 	
+	public void buttonCheck(PushButton button) {
+		compareButton = button;
+		for(int i = 0; i < client.getNumberOfSelectionButtons(); i++) {
+			if(compareButton == client.getSelectionButton(i)) {
+				buttonPressed = i;
+				System.out.println("Button " + i + " was pressed");
+			}
+		}
+	}
+	
+	public int getButtonPressed() {
+		return buttonPressed;
+	}
+	
+	
 	//RYAN, new method to dispense change, only does exact change right now
 	//Methd call to dispense change also added when a pop is dispensed 
 	  public void dispenseChange(int credit) throws CapacityExceededException, EmptyException, DisabledException
@@ -560,6 +576,7 @@ public class Controller {
 
 		@Override
 		public void pressed(PushButton button) {
+			buttonCheck(button);
 			System.out.println("pressed");
 			
 		}
