@@ -11,7 +11,7 @@ import org.lsmr.vending.hardware.*;
 
 /**
  * @author Vending Solutions Incorporated
- * Developed by: Nguyen Viktor(10131322), Michaela Olö·kov·(30002591), Roman Sklyar(10131059)
+ * Developed by: Nguyen Viktor(10131322), Michaela Ol≈°√°kov√°(30002591), Roman Sklyar(10131059)
  * 
  *
  */
@@ -344,14 +344,14 @@ public class Controller {
 	  return buttonPressed;
 	}
 	
-	//RYAN, new method to dispense change, only does exact change right now
-	//Methd call to dispense change also added when a pop is dispensed 
+	//RYAN, changed the method so that we dont assume that the coin racks are full 
 	  public void dispenseChange(int credit) throws CapacityExceededException, EmptyException, DisabledException
 	  {
 		  int change = credit;
 		  
 		  if (checkChange(change) == true) //if we can give exact change, then go through all the coin types and give back the change 
 		  {
+
 			  int toonies = Math.round((int)change/200);
 			  change = change % 200;
 			  int loonies = Math.round((int)change/100);
@@ -408,7 +408,7 @@ public class Controller {
 					  total -= 5;
 				  }
 			  }
-			  
+
 		  }
 		  else 
 		  {
