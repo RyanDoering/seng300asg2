@@ -261,32 +261,35 @@ public class Controller {
 	 * Checks to see if there is exact change available for distribution
 	 * @return boolean value, true if there is enough, false if there is not enough
 	 */
-	public void exactChange() {
+  public void exactChange() {
     int numOfPops = client.getNumberOfSelectionButtons();
     int cost;
     int loonieCheck, toonieCheck;
     int[] costs = new int[numOfPops];
-    for(int i = 0; i < numOfPops; i++) {
+    for (int i = 0; i < numOfPops; i++) {
       costs[i] = client.getPopKindCost(i);
     }
-    // Currently checking all items in the vending machine. Can be made more efficient if duplicate numbers are
+    // Currently checking all items in the vending machine. Can be made more
+    // efficient if duplicate numbers are
     // removed from the array and are the only ones checked. May be done in future
-    for(int j = 0; j < numOfPops; j++) {
+    for (int j = 0; j < numOfPops; j++) {
       cost = costs[j];
-      if((cost % 25) != 0) {
-        if(!(checkChange(cost % 25))) {
+      if ((cost % 25) != 0) {
+        if (!(checkChange(cost % 25))) {
           client.getExactChangeLight().activate();
+          return;
         }
       }
       loonieCheck = ((cost + 99) / 100) * 100;
       toonieCheck = loonieCheck + 100;
-      if(!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
+      if (!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
         client.getExactChangeLight().activate();
-      } else {
-        client.getExactChangeLight().deactivate();
+        return;
       }
+      client.getExactChangeLight().deactivate();
+
     }
-	}
+  }
 	
 	
 	/**
@@ -348,43 +351,64 @@ public class Controller {
 		  
 		  if (checkChange(change) == true) //if we can give exact change, then go through all the coin types and give back the change 
 		  {
-			int nickelTotal = client.getCoinRackForCoinKind(5).size();
-		    	int dimeTotal = client.getCoinRackForCoinKind(10).size();
-		    	int quarterTotal = client.getCoinRackForCoinKind(25).size();
-		    	int loonieTotal = client.getCoinRackForCoinKind(100).size();
-		    	int toonieTotal = client.getCoinRackForCoinKind(200).size();
-		    	int changeRequired = credit;
-		   
-		    	while(changeRequired >= 200 && toonieTotal > 0) {
-		      		changeRequired -= 200;
-		      		toonieTotal--;
-		      		client.getCoinRackForCoinKind(200).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(200));
-		    	}
-		    	while(changeRequired >= 100 && loonieTotal > 0) {
-		      		changeRequired -= 100;
-		      		loonieTotal--;
-		      		client.getCoinRackForCoinKind(100).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(100));
-		    	}
-		    	while(changeRequired >= 25 && quarterTotal > 0) {
-		      		changeRequired -= 25;
-		      		quarterTotal--;
-		      		client.getCoinRackForCoinKind(25).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(25));
-		    	}
-		    	while(changeRequired >= 10 && dimeTotal > 0) {
-		      		changeRequired -= 10;
-		      		dimeTotal--;
-		      		client.getCoinRackForCoinKind(10).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(10));
-		    	}
-		    	while(changeRequired >= 5 && nickelTotal > 0) {
-		      		changeRequired -= 5;
-		      		nickelTotal--;
-		      		client.getCoinRackForCoinKind(5).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(5));
-		    	}
+
+			  int toonies = Math.round((int)change/200);
+			  change = change % 200;
+			  int loonies = Math.round((int)change/100);
+			  change = change % 100;
+			  int quarters = Math.round((int)change/25);
+			  change = change % 25;
+			  int dimes = Math.round((int)change/10);
+			  change = change % 10;
+			  int nickels = Math.round((int)change/5);
+			  change = change % 5;
+			  
+			  if (toonies != 0)
+			  {
+				  for (int i = 0; i < toonies; i++)
+				  {
+					  //client.getCoinRackForCoinKind(200).releaseCoin();
+					  //client.getCoinReturn().acceptCoin(new Coin(200));
+					  total -= 200;
+				  }
+			  }
+			  if (loonies != 0)
+			  {
+				  for (int i = 0; i < loonies; i++)
+				  {
+					  //client.getCoinRackForCoinKind(100).releaseCoin();
+					  //client.getCoinReturn().acceptCoin(new Coin(100));
+					  total -= 100;
+				  }
+			  }
+			  if (quarters != 0)
+			  {
+				  for (int i = 0; i < quarters; i++)
+				  {
+					  //client.getCoinRackForCoinKind(25).releaseCoin();
+					  //client.getCoinReturn().acceptCoin(new Coin(25));
+					  total -= 25;
+				  }
+			  }
+			  if (dimes != 0)
+			  {
+				  for (int i = 0; i < dimes; i++)
+				  {
+					  //client.getCoinRackForCoinKind(10).releaseCoin();
+					  //client.getCoinReturn().acceptCoin(new Coin(10));
+					  total -= 10;
+				  }
+			  }
+			  if (nickels != 0)
+			  {
+				  for (int i = 0; i < nickels; i++)
+				  {
+					  //client.getCoinRackForCoinKind(5).releaseCoin();
+					  //client.getCoinReturn().acceptCoin(new Coin(5));
+					  total -= 5;
+				  }
+			  }
+
 		  }
 		  else 
 		  {
@@ -398,32 +422,37 @@ public class Controller {
 		    	while(changeRequired >= 200 && toonieTotal > 0) {
 		      		changeRequired -= 200;
 		      		toonieTotal--;
-		      		client.getCoinRackForCoinKind(200).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(200));
+		      		//client.getCoinRackForCoinKind(200).releaseCoin();
+		      		//client.getCoinReturn().acceptCoin(new Coin(200));
+		      		total -= 200;
 		    	}
 		    	while(changeRequired >= 100 && loonieTotal > 0) {
 		      		changeRequired -= 100;
 		      		loonieTotal--;
-		      		client.getCoinRackForCoinKind(100).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(100));
+		      		//client.getCoinRackForCoinKind(100).releaseCoin();
+		      		//client.getCoinReturn().acceptCoin(new Coin(100));
+		      		total -= 100;
 		    	}
 		    	while(changeRequired >= 25 && quarterTotal > 0) {
 		      		changeRequired -= 25;
 		      		quarterTotal--;
-		      		client.getCoinRackForCoinKind(25).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(25));
+		      		//client.getCoinRackForCoinKind(25).releaseCoin();
+		      		//client.getCoinReturn().acceptCoin(new Coin(25));
+		      		total -= 25;
 		    	}
 		    	while(changeRequired >= 10 && dimeTotal > 0) {
 		      		changeRequired -= 10;
 		      		dimeTotal--;
-		      		client.getCoinRackForCoinKind(10).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(10));
+		      		//client.getCoinRackForCoinKind(10).releaseCoin();
+		      		//client.getCoinReturn().acceptCoin(new Coin(10));
+		      		total -= 10;
 		    	}
 		    	while(changeRequired >= 5 && nickelTotal > 0) {
 		      		changeRequired -= 5;
 		      		nickelTotal--;
-		      		client.getCoinRackForCoinKind(5).releaseCoin();
-				client.getCoinReturn().acceptCoin(new Coin(5));
+		      		//client.getCoinRackForCoinKind(5).releaseCoin();
+		      		//client.getCoinReturn().acceptCoin(new Coin(5));
+		      		total -= 5;
 		    	}
 		  }
 	  }
@@ -432,13 +461,14 @@ public class Controller {
 	/**
 	 * User has entered a coin. Insert it into the hardware and listen to whether its valid. Update total accordingly.
 	 * @param coin
+	 * @throws DisabledException 
 	 */
-	public void insertCoin(Coin coin){
+	public void insertCoin(Coin coin) throws DisabledException{
 		CoinSlot slot = client.getCoinSlot();
 		try {
 			slot.addCoin(coin);
 		} catch (DisabledException e) {
-			System.out.println("Coin slot is disabled");
+			throw new DisabledException();
 		}
 		if (validCoin == true){
 			incrementTotal(coin.getValue());
@@ -609,6 +639,7 @@ public class Controller {
 
 		@Override
 		public void popCansLoaded(PopCanRack rack, PopCan... popCans) {
+		  client.getOutOfOrderLight().deactivate();
 			// DO NOTHING
 
 		}
