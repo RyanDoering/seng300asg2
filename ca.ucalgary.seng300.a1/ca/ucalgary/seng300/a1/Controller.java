@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -322,9 +321,7 @@ public class Controller {
 		for (int i = 0; i < numOfPops; i++) {
 			test[i] = client.getPopKindCost(i);
 		}
-		// Currently checking all items in the vending machine. Can be made more
-		// efficient if duplicate numbers are
-		// removed from the array and are the only ones checked. May be done in future
+		// Currently checking all items in the vending machine.
 		Set<Integer> set = new LinkedHashSet<Integer>(Arrays.asList(test));
 		Integer[] costs = new Integer[set.size()];
 		set.toArray(costs);
@@ -543,7 +540,7 @@ public class Controller {
 
 	/**
 	 * A class for the CoinSlotListener to get events from the machine
-	 * 
+	 * Sends related Event information to be Logged
 	 */
 	private class MySlotListener implements CoinSlotListener {
 
@@ -579,6 +576,7 @@ public class Controller {
 
 	/**
 	 * A class for the ButtonListener to get events from the machine
+	 * Sends related Event information to be Logged
 	 * 
 	 */
 	private class MyButtonListener implements PushButtonListener {
@@ -586,14 +584,14 @@ public class Controller {
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
 			buttonCheck((PushButton) hardware);
-			System.out.println("Button " + Integer.toString(buttonPressed) + " Enabled");
+			queue("Button " + Integer.toString(buttonPressed) + " Enabled");
 			buttonEnabled = true;
 		}
 
 		@Override
 		public void disabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
 			buttonCheck((PushButton) hardware);
-			System.out.println("Button " + Integer.toString(buttonPressed) + " Disabled");
+			queue("Button " + Integer.toString(buttonPressed) + " Disabled");
 			buttonEnabled = false;
 		}
 
@@ -608,6 +606,7 @@ public class Controller {
 
 	/**
 	 * A class for the PopRackListener to get events from the machine
+	 * Sends related Event information to be Logged
 	 * 
 	 */
 	private class MyPopRackListener implements PopCanRackListener {
@@ -664,7 +663,7 @@ public class Controller {
 				}
 			}
 
-			queue("PopCan Removed freom Rack " + Integer.toString(getIndex()));
+			queue("PopCan Removed from Rack " + Integer.toString(getIndex()));
 			System.out.println("Pop Can Removed");
 
 		}
@@ -691,7 +690,7 @@ public class Controller {
 				}
 			}
 
-			queue("Rack " + Integer.toString(getIndex()) + "is Empty");
+			queue("Rack " + Integer.toString(getIndex()) + " is Empty");
 
 		}
 
@@ -725,6 +724,7 @@ public class Controller {
 
 	/**
 	 * A class for the DeliveryChuteListener to get events from the machine
+	 * Sends related Event information to be Logged
 	 */
 	private class MyDeliveryChuteListener implements DeliveryChuteListener {
 
@@ -768,6 +768,10 @@ public class Controller {
 
 	}
 
+	/**
+	 * A class for the DisplayListener to get events from the machine
+	 * Sends related Event information to be Logged
+	 */
 	private class MyDisplayListener implements DisplayListener {
 
 		@Override
@@ -790,6 +794,10 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * A class for the OutofOrderLightListener to get events from the machine
+	 * Sends related Event information to be Logged
+	 */
 	private class MyOutOfOrderLightListener implements IndicatorLightListener {
 
 		@Override
@@ -809,19 +817,23 @@ public class Controller {
 
 		@Override
 		public void activated(IndicatorLight light) {
-			queue("Out of Order Light in On");
+			queue("Out of Order Light is On");
 			System.out.println("Out of Order Light activated");
 
 		}
 
 		@Override
 		public void deactivated(IndicatorLight light) {
-			queue("Out of Order Light in Off");
+			queue("Out of Order Light is Off");
 			System.out.println("Out of Order Light deactivated");
 
 		}
 	}
 
+	/**
+	 * A class for the ExactChangeListener to get events from the machine
+	 * Sends related Event information to be Logged
+	 */
 	private class MyExactChangeOnlyLightListener implements IndicatorLightListener {
 
 		@Override
@@ -854,6 +866,11 @@ public class Controller {
 
 	}
 
+	/*
+	 * Takes the string pertaining to the event that called queue
+	 * adds a timestamp and adds it to the queue for log to write to the file
+	 * 
+	 */
 	public static void queue(String toWrite) {
 		String toQueue;
 		// dateFormat = new SimpleDateFormat("E MMM/dd HH:mm:ss.S");
@@ -861,7 +878,13 @@ public class Controller {
 		toQueue = dateFormat.format(date) + " -> " + toWrite + "\n";
 		Queue.add(toQueue);
 	}
-
+	
+	/**
+	 * Writes to the event Log, runs after each transaction or every minute
+	 * Only writes to the log if there are Queued Strings 
+	 * Done so that The file is opened and closed less frequently
+	 * @throws IOException if File cant be opened
+	 */
 	public void updateLog() throws IOException {
 		if (!writing) {
 			writing = true;
