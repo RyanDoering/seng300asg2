@@ -14,7 +14,7 @@ import ca.ucalgary.seng300.a2.Controller;
 
 /**
  * @author Vending Solutions Incorporated
- * Developed by: Nguyen Viktor, Michaela Olšáková, Roman Sklyar
+ * Developed by: Nguyen Viktor, Tran Preston, Rehman Zia, Holmes Brett, Doering Ryan, Wojcik Matthew.
  *
  */
 
@@ -44,43 +44,44 @@ public class ControllerTest {
     myVending.cleanUpTimers();
   }
 
-  //** MATTHEW, Teardown requires to clean up the timers, the 2 test methods make sure the display is working properly
-  //comment them out when doing your own testing because they take 12 seconds to finish
+  //** MATTHEW, Teardown required to clean up the timers, the 2 test methods make sure the display is working properly
+  //comment them out when doing your own testing because they take time to finish
   /**
    * Test method for {@link ca.ucalgary.seng300.a1.Controller#Controller()}.
    * @throws DisabledException 
+   * @throws EmptyException 
+   * @throws CapacityExceededException 
    * @throws InterruptedException 
    */
-  //@Test
-  //public void passiveDisply() throws InterruptedException{
-  //  Thread.sleep(3*1000);//3 seconds into the simulation, no coins entered
-  //  assertEquals(myVending.messageBeingDisplayed, "Hi There!");
-  //  Thread.sleep(3*1000); //total of 6 seconds in, no longer displaying hi
-  //  assertEquals(myVending.messageBeingDisplayed, "");
-  //}
-  //important - when the display is made to display the coin amount when some coin is inserted
-  //this test case will have to change to reflect that
-  //@Test
-  //public void passiveDisplyCoinInsterted() throws InterruptedException{
-  //  Coin coin = new Coin(100);
-  //  myVending.insertCoin(coin);
-  //  Thread.sleep(3*1000);//credit is non 0 so null should still be displayed
-  //  assertEquals(myVending.messageBeingDisplayed, null);
-  //  Thread.sleep(3*1000); 
-  //  assertEquals(myVending.messageBeingDisplayed, null);
-  //}
-  
-  //@Test
-  //public void creditDisply(){
-  //  Coin coin2 = new Coin(3);
-  //  Coin coin = new Coin(100);
-  //  Coin coin3 = new Coin(5);
-  //  myVending.insertCoin(coin);
-    //myVending.insertCoin(coin2); //doesnt work because the return thingy is "broken"
-  //  assertEquals(myVending.messageBeingDisplayed,"Credit: $1.00");
-  // myVending.insertCoin(coin3);
-  //  assertEquals(myVending.messageBeingDisplayed,"Credit: $1.05");
-  //}
+  @Test
+  public void passiveDisply() throws InterruptedException{
+    Thread.sleep(3*1000);//3 seconds into the simulation, no coins entered
+    assertEquals(myVending.messageBeingDisplayed, "Hi There!");
+    Thread.sleep(3*1000); //total of 6 seconds in, no longer displaying hi
+    assertEquals(myVending.messageBeingDisplayed, "");
+  }
+  /**
+   * Test method for {@link ca.ucalgary.seng300.a1.Controller#Controller()}.
+   * @throws DisabledException 
+   * @throws EmptyException 
+   * @throws CapacityExceededException 
+   * @throws InterruptedException 
+   */
+  @Test
+  public void creditDisply() throws DisabledException, EmptyException, CapacityExceededException, InterruptedException{
+    Coin coin2 = new Coin(3);
+    Coin coin = new Coin(100);
+    Coin coin3 = new Coin(5);
+    myVending.insertCoin(coin);
+    myVending.insertCoin(coin2);//make sure invalid coins arent added
+    assertEquals(myVending.messageBeingDisplayed,"Credit: $1.00");
+    myVending.insertCoin(coin3);
+    assertEquals(myVending.messageBeingDisplayed,"Credit: $1.05");
+    myVending.decrementTotal(25); //this method is called when moving change
+    assertEquals(myVending.messageBeingDisplayed,"Credit: $0.80");
+    Thread.sleep(10*1000);
+    assertEquals(myVending.messageBeingDisplayed,"Credit: $0.80");
+  }
   //**END, MATTHEW
   
   @Test
