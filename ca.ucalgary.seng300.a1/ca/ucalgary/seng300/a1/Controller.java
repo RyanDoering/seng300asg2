@@ -8,9 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -118,8 +121,6 @@ public class Controller {
 		client = new VendingMachine(CAD, 6, 15, 10, 200, 10, 10); // 10 is delivery chute capacity and coin return
 																	// capacity - temp values because its not my problem
 
-		exactChange();
-
 		outOfOrderLight = client.getOutOfOrderLight();
 		exactChangeOnlyLight = client.getExactChangeLight();
 
@@ -145,6 +146,8 @@ public class Controller {
 
 		exactChangeOnlyLightListener = new MyExactChangeOnlyLightListener();
 		exactChangeOnlyLight.register(exactChangeOnlyLightListener);
+
+		exactChange();
 
 		// set up the pop cans and prices and add them to the rack
 		List<String> popCanNames = new ArrayList<String>();
@@ -209,7 +212,6 @@ public class Controller {
 				try {
 					updateLog();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -316,14 +318,17 @@ public class Controller {
 		int numOfPops = client.getNumberOfSelectionButtons();
 		int cost;
 		int loonieCheck, toonieCheck;
-		int[] costs = new int[numOfPops];
+		Integer[] test = new Integer[numOfPops];
 		for (int i = 0; i < numOfPops; i++) {
-			costs[i] = client.getPopKindCost(i);
+			test[i] = client.getPopKindCost(i);
 		}
 		// Currently checking all items in the vending machine. Can be made more
 		// efficient if duplicate numbers are
 		// removed from the array and are the only ones checked. May be done in future
-		for (int j = 0; j < numOfPops; j++) {
+		Set<Integer> set = new LinkedHashSet<Integer>(Arrays.asList(test));
+		Integer[] costs = new Integer[set.size()];
+		set.toArray(costs);
+		for (int j = 0; j < costs.length; j++) {
 			cost = costs[j];
 			if ((cost % 25) != 0) {
 				if (!(checkChange(cost % 25))) {
@@ -333,7 +338,8 @@ public class Controller {
 			loonieCheck = ((cost + 99) / 100) * 100;
 			toonieCheck = loonieCheck + 100;
 			if (!checkChange(loonieCheck - cost) || !checkChange(toonieCheck - cost)) {
-				client.getExactChangeLight().activate();
+				if(!client.getExactChangeLight().isActive())
+					client.getExactChangeLight().activate();
 			} else {
 				client.getExactChangeLight().deactivate();
 			}
@@ -399,43 +405,43 @@ public class Controller {
 	// Methd call to dispense change also added when a pop is dispensed
 	public void dispenseChange(int credit) throws CapacityExceededException, EmptyException, DisabledException {
 		int change = credit;
-			int nickelTotal = client.getCoinRackForCoinKind(5).size();
-			int dimeTotal = client.getCoinRackForCoinKind(10).size();
-			int quarterTotal = client.getCoinRackForCoinKind(25).size();
-			int loonieTotal = client.getCoinRackForCoinKind(100).size();
-			int toonieTotal = client.getCoinRackForCoinKind(200).size();
-			int changeRequired = credit;
+		int nickelTotal = client.getCoinRackForCoinKind(5).size();
+		int dimeTotal = client.getCoinRackForCoinKind(10).size();
+		int quarterTotal = client.getCoinRackForCoinKind(25).size();
+		int loonieTotal = client.getCoinRackForCoinKind(100).size();
+		int toonieTotal = client.getCoinRackForCoinKind(200).size();
+		int changeRequired = credit;
 
-			while (changeRequired >= 200 && toonieTotal > 0) {
-				changeRequired -= 200;
-				toonieTotal--;
-				decrementTotal(200);
-				client.getCoinRackForCoinKind(200).releaseCoin();
-			}
-			while (changeRequired >= 100 && loonieTotal > 0) {
-				changeRequired -= 100;
-				loonieTotal--;
-				decrementTotal(100);
-				client.getCoinRackForCoinKind(100).releaseCoin();
-			}
-			while (changeRequired >= 25 && quarterTotal > 0) {
-				changeRequired -= 25;
-				quarterTotal--;
-				decrementTotal(25);
-				client.getCoinRackForCoinKind(25).releaseCoin();
-			}
-			while (changeRequired >= 10 && dimeTotal > 0) {
-				changeRequired -= 10;
-				dimeTotal--;
-				decrementTotal(10);
-				client.getCoinRackForCoinKind(10).releaseCoin();
-			}
-			while (changeRequired >= 5 && nickelTotal > 0) {
-				changeRequired -= 5;
-				nickelTotal--;
-				decrementTotal(5);
-				client.getCoinRackForCoinKind(5).releaseCoin();
-			}
+		while (changeRequired >= 200 && toonieTotal > 0) {
+			changeRequired -= 200;
+			toonieTotal--;
+			decrementTotal(200);
+			client.getCoinRackForCoinKind(200).releaseCoin();
+		}
+		while (changeRequired >= 100 && loonieTotal > 0) {
+			changeRequired -= 100;
+			loonieTotal--;
+			decrementTotal(100);
+			client.getCoinRackForCoinKind(100).releaseCoin();
+		}
+		while (changeRequired >= 25 && quarterTotal > 0) {
+			changeRequired -= 25;
+			quarterTotal--;
+			decrementTotal(25);
+			client.getCoinRackForCoinKind(25).releaseCoin();
+		}
+		while (changeRequired >= 10 && dimeTotal > 0) {
+			changeRequired -= 10;
+			dimeTotal--;
+			decrementTotal(10);
+			client.getCoinRackForCoinKind(10).releaseCoin();
+		}
+		while (changeRequired >= 5 && nickelTotal > 0) {
+			changeRequired -= 5;
+			nickelTotal--;
+			decrementTotal(5);
+			client.getCoinRackForCoinKind(5).releaseCoin();
+		}
 	}
 	// DONE
 
@@ -465,8 +471,9 @@ public class Controller {
 	 * 
 	 * @param button
 	 * @throws SimulationException
+	 * @throws EmptyException
 	 */
-	public void pushButton(Integer button) throws SimulationException {
+	public void pushButton(Integer button) throws SimulationException, EmptyException {
 
 		if (button >= client.getNumberOfSelectionButtons()) {
 			throw new SimulationException("Invalid button pressed");
@@ -497,22 +504,16 @@ public class Controller {
 					dispenseChange(total);
 					updateLog();
 
-					if (popCanRacksEmpty()) {
-						outOfOrder = true;
-						outOfOrderLight.activate();
-					}
-
 				} catch (DisabledException e) {
-					// TODO Auto-generated catch block
+
 					throw new SimulationException("Pop rack is disabled");
 				} catch (EmptyException e) {
-					throw new SimulationException("Pop rack empty");
+					outOfOrder = true;
+					outOfOrderLight.activate();
 
 				} catch (CapacityExceededException e) {
-					// TODO Auto-generated catch block
 					throw new SimulationException("Capacity exceeded");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
@@ -562,8 +563,7 @@ public class Controller {
 
 		@Override
 		public void validCoinInserted(CoinSlot slot, Coin coin) {
-			queue("Valid Coin Inserted, Credit Updated by: " + coin.getValue() + " Current Total: "
-					+ Integer.toString(total));
+			queue("Valid Coin Inserted, Credit Updated by: " + coin.getValue());
 			System.out.println("Valid coin inserted");
 			validCoin = true;
 		}
@@ -856,7 +856,7 @@ public class Controller {
 
 	public static void queue(String toWrite) {
 		String toQueue;
-		dateFormat = new SimpleDateFormat("E MMM/dd HH:mm:ss.S");
+		// dateFormat = new SimpleDateFormat("E MMM/dd HH:mm:ss.S");
 		date = new Date();
 		toQueue = dateFormat.format(date) + " -> " + toWrite + "\n";
 		Queue.add(toQueue);
