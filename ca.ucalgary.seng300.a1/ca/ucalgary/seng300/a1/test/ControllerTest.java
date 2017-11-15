@@ -2,11 +2,12 @@ package ca.ucalgary.seng300.a2.test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import ca.ucalgary.seng300.a2.Controller;
 
 /**
  * @author Vending Solutions Incorporated
- * Developed by: Nguyen Viktor, Michaela Olö·kov·, Roman Sklyar
+ * Developed by: Nguyen Viktor, Michaela Ol≈°√°kov√°, Roman Sklyar
  *
  */
 
@@ -41,6 +42,8 @@ public class ControllerTest {
   @After
   public void tearDown() throws Exception {
     myVending.cleanUpTimers();
+    File f = new File("Output.txt");
+    f.delete();
   }
 
   //** MATTHEW, Teardown required to clean up the timers, the 2 test methods make sure the display is working properly
@@ -584,25 +587,375 @@ public class ControllerTest {
     assertEquals(true, myVending.getVending().getOutOfOrderLight().isActive());
   }
   
- /*
-  @Test
-  public void testCoinRackFull() throws Exception{
-    Coin test = new Coin(25);
-    int[] coins = {15,15,15,15,15};
-    int[] popCans = new int[6];
-    for (int i = 0; i < 6; i++) {
-      popCans[i] = 10;
-    }
+  ////////////////////////////////////////////////////////////////////////////////////
+  /// *Disclaimer, the following tests Are Designed to test if events are being    ///
+  ///  Logged. Some do not pass in the test suite due to clock issues, but if run  ///
+  ///  individually they all pass, and show thats events are being properly logged.///
+  ////////////////////////////////////////////////////////////////////////////////////
+  
+/**
+	 * Tests If Coin Slot events enable and disable are properly displayed in the log
+	 * @throws DisabledException 
+	 */
+	@Test
+	public void CoinSlotLogtest1() throws DisabledException {
+		String line = "";
+		String temp = "";
+		myVending.getVending().getCoinSlot().disable();
+		myVending.getVending().getCoinSlot().enable();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 5; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"CoinSlot Disabled\n" + 
+							"CoinSlot Enabled\n");
+	}
+	
+	/**
+	 * Tests If Coin Slot events insert valid coin and insert invalid Coin are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void CoinSlotLogtest2() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		coin = new Coin(5);
+		myVending.insertCoin(coin);
+		coin = new Coin(3);
+		myVending.insertCoin(coin);
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 5; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" +  
+							"Valid Coin Inserted, Credit Updated by: 5\n" + 
+							"Message Changed! New Message being displayed: Credit: $0.05\n");
+	}
+	
+	/**
+	 * Tests If Button events enable, disable, and press properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void ButtonLogtest() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		
+		myVending.getVending().getSelectionButton(0).disable();
+		myVending.getVending().getSelectionButton(0).enable();
+		myVending.getVending().getSelectionButton(0).press();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 6; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Button 0 Disabled\n" + 
+							"Button 0 Enabled\n" + 
+							"Button 0 Pressed\n");
+	}
+	
+	/**
+	 * Tests If Poprack events  enable and disable are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void PopRackLogTest1() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getPopCanRack(0).disable();
+		myVending.getVending().getPopCanRack(0).enable();
 
-    myVending.getVending().loadPopCans(popCans);
-    myVending.getVending().loadCoins(coins);
-    myVending.getVending().getOutOfOrderLight().deactivate();
-    myVending.getVending().getCoinSlot().addCoin(test);
-    myVending.setTotal(400);
-    myVending.pushButton(2); // Test fails in CoinReceptacle, object does not read as Null so passes the if(object != null) case and causes a null pointer issue
-    assertEquals(true, myVending.getVending().getOutOfOrderLight().isActive());
-  }
- */
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 5; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Pop Rack 0 Disabled\n" +  
+							"Pop Rack 0 Enabled\n");
+	}
+	
+	/**
+	 * Tests If PopRack Events load pop, unload pop, remove pop, and is empty are properly displayed in the log
+	 * Also Covers Item delivered from Chute Listener
+	 * $Test cannot be run for is full as an exception is thrown on the same condition and the line cant be reached
+	 * @throws DisabledException
+	 * @throws CapacityExceededException 
+	 * @throws EmptyException 
+	 */
+	@Test
+	public void PopRackLogTest2() throws DisabledException, EmptyException, CapacityExceededException {
+		String line = "";
+		String temp = "";
+		
+		int[] popCans = new int[6];
+	    popCans[0] = 1;
+	    
+	    myVending.getVending().getPopCanRack(0).unload();
+	    myVending.getVending().loadPopCans(popCans);
+	    myVending.getVending().getPopCanRack(0).dispensePopCan();
+
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 8; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"PopCans Unloaded from Rack 0\n" +
+							"PopCans Loaded into Rack 0\n" +
+							"PopCan Removed from Rack 0\n" + 
+							"Item Delivered\n" +
+							"Rack 0 is Empty\n");
+	}
+
+	/**
+	 * Tests If DeliveryChute events enable and disable are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void ChuteLogTest1() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getDeliveryChute().disable();
+		myVending.getVending().getDeliveryChute().enable();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 5; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Chute Disabled\n" +  
+							"Chute Enabled\n");
+	}
+	
+	/**
+	 * Tests If DeliveryChute events chute door open and chute door closed are properly displayed in the log
+	 * $Test cannot be run for is full as an exception is thrown on the same condition and the line cant be reached
+	 * @throws DisabledException
+	 */
+	@Test
+	public void ChuteLogTest2() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getDeliveryChute().removeItems();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 5; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Delivery Chute Door Opened\n" +  
+							"Delivery Chute Door Closed\n");
+	}
+	
+	/**
+	 * Tests If Display events message change, enable, and disable are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void DisplayLogTest() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getDisplay().disable();
+		myVending.getVending().getDisplay().enable();
+		myVending.getVending().getDisplay().display("Hello");
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 6; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Display Disabled\n" +  
+							"Display Enabled\n" + 
+							"Message Changed! New Message being displayed: Hello\n");
+	}
+	
+	/**
+	 * Tests If OutOfOrderLight events activated, deactivated enable, and disable are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void OutOfOrderLightLogTest() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getOutOfOrderLight().deactivate();
+		myVending.getVending().getOutOfOrderLight().disable();
+		myVending.getVending().getOutOfOrderLight().enable();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 6; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Out of Order Light is Off\n" +  
+							"Out of Order Indicator Disabled\n" + 
+							"Out of Order Indicator Enabled\n");
+	}
+	
+	/**
+	 * Tests If exact change light events activated, deactivated enable, and disable are properly displayed in the log
+	 * @throws DisabledException
+	 */
+	@Test
+	public void ExactChangeLightLogTest() throws DisabledException {
+		String line = "";
+		String temp = "";
+		
+		myVending.getVending().getExactChangeLight().deactivate();
+		myVending.getVending().getExactChangeLight().disable();
+		myVending.getVending().getExactChangeLight().enable();
+		
+		try {
+			myVending.updateLog();
+			BufferedReader reader = new BufferedReader(new FileReader("Output.txt"));
+			for(int i = 0; i < 6; i++) {
+				temp = reader.readLine();
+				temp = temp.substring(37);
+				line += (temp + "\n" );
+			}			
+			 
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertEquals(line, "Vending Machine, Instanced\n" + 
+							"Exact Change Only Light is On\n" + 
+							"Out of Order Light is On\n" + 
+							"Exact Change Only Light is Off\n" +  
+							"Exact Change Only Indicator Disabled\n" + 
+							"Exact Change Only Indicator Enabled\n");
+	}
+	
   // END
 
 }
